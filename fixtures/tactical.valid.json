@@ -1,0 +1,12 @@
+{
+  "contractVersion": "1.0", "schemaVersion": "1", "journeyId": "protocol-fixture",
+  "altitude": "tactical", "namespace": "nautilus-synthesis", "projection": "tactical",
+  "snapshotId": "ta-fixture-1", "generatedAt": "2030-01-01T00:00:00Z",
+  "producer": {"kind": "extension", "id": "nautilus-synthesis", "version": "0.1.0"},
+  "sourceRevision": "sha256:tactical-fixture", "sourceSnapshots": [{"namespace": "ariad", "projection": "operational", "snapshotId": "op-fixture-1"}],
+  "content": {
+    "mission": {"id": "mission-1", "title": "Publish coherent Journey readings", "purpose": "Orient the current movement without creating workflow state."},
+    "evidence": [{"id": "evidence-1", "title": "Mirror contract returned", "summary": "The installed public contract passed its consumer gate.", "sourceReferences": ["snapshot:op-fixture-1"]}],
+    "deliverables": [{"id": "delivery-1", "title": "Projection consumer foundation", "summary": "Protocol, Method and Extension can now consume the contract.", "evidenceIds": ["evidence-1"], "sourceReferences": ["artifact:mirror-return.json"]}]
+  }
+}
