@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "journey": "nautilus-agentic-protocol",
+  "name": "Nautilus Agentic Protocol",
+  "status": "active",
+  "parent_journey": "nautilus",
+  "hierarchy": [
+    "vida-criativa",
+    "nautilus",
+    "nautilus-agentic-protocol"
+  ],
+  "journey_home": "/Users/alissonvale/.mirror-journeys/vida-criativa/nautilus/agentic-protocol",
+  "workspace_state": "materialized",
+  "materialization_strategy": "child-journey-home-first",
+  "source_project_path": "",
+  "source_project_path_resolved": "",
+  "target_project_path": "/Users/alissonvale/.mirror-journeys/vida-criativa/nautilus/agentic-protocol",
+  "project_path_update_policy": "materialized"
+}
