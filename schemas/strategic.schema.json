@@ -16,7 +16,8 @@
       "required": ["realizations", "impacts"],
       "properties": {
         "realizations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/realization"}},
-        "impacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/impact"}}
+        "impacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/impact"}},
+        "meaningCheckpoints": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/meaningCheckpoint"}}
       }
     }
   },
@@ -25,6 +26,7 @@
     "sources": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
     "value": {"type": "object", "additionalProperties": false, "required": ["summary", "sourceReferences"], "properties": {"summary": {"type": "string"}, "sourceReferences": {"$ref": "#/$defs/sources"}}},
     "impact": {"type": "object", "additionalProperties": false, "required": ["id", "title", "summary", "sourceReferences"], "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "summary": {"type": "string"}, "sourceReferences": {"$ref": "#/$defs/sources"}}},
-    "realization": {"type": "object", "additionalProperties": false, "required": ["id", "title", "summary", "impactIds", "pragmaticValue", "integrativeValue", "sourceReferences"], "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "summary": {"type": "string"}, "impactIds": {"type": "array", "items": {"type": "string"}}, "pragmaticValue": {"$ref": "#/$defs/value"}, "integrativeValue": {"$ref": "#/$defs/value"}, "sourceReferences": {"$ref": "#/$defs/sources"}}}
+    "realization": {"type": "object", "additionalProperties": false, "required": ["id", "title", "summary", "impactIds", "pragmaticValue", "integrativeValue", "sourceReferences"], "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "summary": {"type": "string"}, "impactIds": {"type": "array", "items": {"type": "string"}}, "pragmaticValue": {"$ref": "#/$defs/value"}, "integrativeValue": {"$ref": "#/$defs/value"}, "sourceReferences": {"$ref": "#/$defs/sources"}}},
+    "meaningCheckpoint": {"type": "object", "additionalProperties": false, "required": ["id", "title", "summary", "state", "sourceReferences"], "properties": {"id": {"type": "string", "minLength": 1}, "title": {"type": "string", "minLength": 1}, "summary": {"type": "string", "minLength": 1}, "state": {"enum": ["provisional", "consolidated", "contested", "correction_requested", "stale"]}, "sourceReferences": {"$ref": "#/$defs/sources"}, "correctionBoundary": {"type": "string", "minLength": 1}}}
   }
 }

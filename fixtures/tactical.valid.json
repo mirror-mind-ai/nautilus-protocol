@@ -7,6 +7,7 @@
   "content": {
     "mission": {"id": "mission-1", "title": "Publish coherent Journey readings", "purpose": "Orient the current movement without creating workflow state."},
     "evidence": [{"id": "evidence-1", "title": "Mirror contract returned", "summary": "The installed public contract passed its consumer gate.", "sourceReferences": ["snapshot:op-fixture-1"]}],
-    "deliverables": [{"id": "delivery-1", "title": "Projection consumer foundation", "summary": "Protocol, Method and Extension can now consume the contract.", "evidenceIds": ["evidence-1"], "sourceReferences": ["artifact:mirror-return.json"]}]
+    "deliverables": [{"id": "delivery-1", "title": "Projection consumer foundation", "summary": "Protocol, Method and Extension can now consume the contract.", "evidenceIds": ["evidence-1"], "sourceReferences": ["artifact:mirror-return.json"]}],
+    "meaningCheckpoints": [{"id": "checkpoint-1", "title": "Publication boundary remains under validation", "summary": "The checkpoint contract is available but still awaits Navigator validation.", "state": "provisional", "sourceReferences": ["artifact:mirror-return.json"], "correctionBoundary": "Corrections append review without rewriting source evidence."}]
   }
 }

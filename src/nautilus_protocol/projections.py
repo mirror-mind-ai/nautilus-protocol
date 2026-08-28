@@ -12,6 +12,13 @@ IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{1,127}$")
 CONTRACT_VERSION = "1.0"
 SCHEMA_VERSION = "1"
 NAMESPACE = "nautilus-synthesis"
+CHECKPOINT_STATES = {
+    "provisional",
+    "consolidated",
+    "contested",
+    "correction_requested",
+    "stale",
+}
 
 
 @dataclass(frozen=True)
@@ -37,7 +44,13 @@ def validate_tactical(document: Mapping[str, Any]) -> ProjectionValidation:
     if not isinstance(content, Mapping):
         errors.append("content must be an object")
         return ProjectionValidation(document, tuple(errors))
-    _require_exact_keys(content, {"mission", "evidence", "deliverables"}, "content", errors)
+    _require_keys(
+        content,
+        required={"mission", "evidence", "deliverables"},
+        optional={"meaningCheckpoints"},
+        label="content",
+        errors=errors,
+    )
     mission = content.get("mission")
     if not isinstance(mission, Mapping):
         errors.append("content.mission must be an object")
@@ -45,6 +58,7 @@ def validate_tactical(document: Mapping[str, Any]) -> ProjectionValidation:
         _require_strings(mission, ("id", "title", "purpose"), "content.mission", errors)
     evidence = _validate_named_records(content.get("evidence"), "content.evidence", {"id", "title", "summary", "sourceReferences"}, errors)
     deliverables = _validate_named_records(content.get("deliverables"), "content.deliverables", {"id", "title", "summary", "evidenceIds", "sourceReferences"}, errors)
+    _validate_meaning_checkpoints(content.get("meaningCheckpoints"), errors)
     evidence_ids = {item.get("id") for item in evidence}
     for item in deliverables:
         refs = item.get("evidenceIds")
@@ -61,9 +75,16 @@ def validate_strategic(document: Mapping[str, Any]) -> ProjectionValidation:
     if not isinstance(content, Mapping):
         errors.append("content must be an object")
         return ProjectionValidation(document, tuple(errors))
-    _require_exact_keys(content, {"realizations", "impacts"}, "content", errors)
+    _require_keys(
+        content,
+        required={"realizations", "impacts"},
+        optional={"meaningCheckpoints"},
+        label="content",
+        errors=errors,
+    )
     impacts = _validate_named_records(content.get("impacts"), "content.impacts", {"id", "title", "summary", "sourceReferences"}, errors)
     realizations = _validate_named_records(content.get("realizations"), "content.realizations", {"id", "title", "summary", "impactIds", "pragmaticValue", "integrativeValue", "sourceReferences"}, errors)
+    _validate_meaning_checkpoints(content.get("meaningCheckpoints"), errors)
     impact_ids = {item.get("id") for item in impacts}
     for item in realizations:
         refs = item.get("impactIds")
@@ -129,9 +150,60 @@ def _validate_named_records(value: Any, label: str, keys: set[str], errors: list
     return records
 
 
+def _validate_meaning_checkpoints(value: Any, errors: list[str]) -> None:
+    if value is None:
+        return
+    label = "content.meaningCheckpoints"
+    if not isinstance(value, list) or not value:
+        errors.append(f"{label} must be a non-empty array when present")
+        return
+    records = [item for item in value if isinstance(item, Mapping)]
+    if len(records) != len(value):
+        errors.append(f"{label} items must be objects")
+    seen: set[str] = set()
+    for record in records:
+        _require_keys(
+            record,
+            required={"id", "title", "summary", "state", "sourceReferences"},
+            optional={"correctionBoundary"},
+            label=label,
+            errors=errors,
+        )
+        _require_strings(record, ("id", "title", "summary", "state"), label, errors)
+        identifier = record.get("id")
+        if isinstance(identifier, str):
+            if identifier in seen:
+                errors.append(f"{label} contains duplicate id {identifier}")
+            seen.add(identifier)
+        state = record.get("state")
+        if state not in CHECKPOINT_STATES:
+            errors.append(f"{label}.state must be a supported checkpoint state")
+        _validate_source_references(record.get("sourceReferences"), label, errors)
+        if "correctionBoundary" in record:
+            boundary = record.get("correctionBoundary")
+            if not isinstance(boundary, str) or not boundary:
+                errors.append(f"{label}.correctionBoundary must be a non-empty string")
+
+
 def _validate_source_references(value: Any, label: str, errors: list[str]) -> None:
     if not isinstance(value, list) or not value or not all(isinstance(item, str) and item for item in value):
         errors.append(f"{label}.sourceReferences must be a non-empty string array")
+
+
+def _require_keys(
+    value: Mapping[str, Any],
+    *,
+    required: set[str],
+    optional: set[str],
+    label: str,
+    errors: list[str],
+) -> None:
+    missing = required - set(value)
+    extra = set(value) - required - optional
+    for key in sorted(missing):
+        errors.append(f"{label} missing {key}")
+    for key in sorted(extra):
+        errors.append(f"{label} has unexpected field {key}")
 
 
 def _require_exact_keys(value: Mapping[str, Any], expected: set[str], label: str, errors: list[str]) -> None:
